@@ -7,6 +7,8 @@ void printUsage();
 #include <string.h>
 #include <stdlib.h>
 
+#include "/home/itsec/git/AFL/experimental/argv_fuzzing/argv-fuzz-inl.h"
+
 
 void bufferOverflow(char *word) {
     char buf[20];
@@ -70,24 +72,27 @@ void called(int foo) {
 //gcc exploitME.c -o overflow -fno-stack_protector
 int main(int argc, char *argv[]) {
 
-    if (argc < 2) {
+
+    int inputNumber;
+    printf("Enter an integer: ");
+    scanf("%d", &inputNumber);
+
+    if (inputNumber <= 0) {
         printUsage(argv[0]);
-        return 1;
+        exit(0);
     }
 
-    int x = atoi(argv[1]);
-    if (0 > x || x > 3) {
-        printUsage(argv[0]);
-    }
+    int five;
 
-    switch (x) {
+    switch (inputNumber) {
+
         case 0:
-            printf("Buffer overflow selected\n");
-            bufferOverflow(argv[2]);
-            break;
+            // DIVIDE BY ZERO ERROR
+            five = 5;
+            printf("%i\n", five / inputNumber);
         case 1:
             printf("Use after free selected\n");
-            useAfterFree(x, **++argv);
+            useAfterFree(inputNumber, **++argv);
             break;
             /*case 2:
                 getValueFromArray(&ts, **++argv,**++argv);
@@ -98,12 +103,18 @@ int main(int argc, char *argv[]) {
             break;
         case 3:
             printf("Compare value instead of assignment selected\n");
-            called(x);
+            called(inputNumber);
             break;
+
         default:
-            // should never be executed
-            printUsage();
-            return -3;
+            printf("Buffer overflow selected\n");
+            char *test = (char*) malloc(inputNumber*sizeof(char));
+            for (int i = 0; i < inputNumber; i++) {
+                test[i] = 'A';
+            }
+            bufferOverflow(test);
+            free(test);
+            break;
     }
 }
 
@@ -111,8 +122,9 @@ void printUsage(char *executableName) {
     printf("Invalid command line argument. Needed: 1 (integer only)\n\n");
     printf("Usage: %s <integer>\n", executableName);
     printf("Supported integer values:\n");
-    printf("\t0: buffer overflow\n");
+    printf("\t0: division-by-zero\n");
     printf("\t1: use-after-free\n");
     printf("\t2: double-free\n");
     printf("\t3: value comparison instead of assignment\n");
+    printf("\t4: buffer overflow\n");
 }
