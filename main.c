@@ -7,8 +7,6 @@ void printUsage();
 #include <string.h>
 #include <stdlib.h>
 
-#include "/home/itsec/git/AFL/experimental/argv_fuzzing/argv-fuzz-inl.h"
-
 
 void bufferOverflow(char *word) {
     char buf[20];
@@ -77,7 +75,7 @@ int main(int argc, char *argv[]) {
     printf("Enter an integer: ");
     scanf("%d", &inputNumber);
 
-    if (inputNumber <= 0) {
+    if (inputNumber < 0) {
         printUsage(argv[0]);
         exit(0);
     }
