@@ -70,10 +70,15 @@ void called(int foo) {
 //gcc exploitME.c -o overflow -fno-stack_protector
 int main(int argc, char *argv[]) {
 
-
     int inputNumber;
-    printf("Enter an integer: ");
-    scanf("%d", &inputNumber);
+    if (argc == 2) {
+        inputNumber = atoi(argv[1]);
+        printf("Input number: %d", inputNumber);
+    } else {
+        printf("Enter an integer: ");
+        scanf("%d", &inputNumber);
+    }
+
 
     if (inputNumber < 0) {
         printUsage(argv[0]);
@@ -82,10 +87,13 @@ int main(int argc, char *argv[]) {
 
     int five;
 
+    fflush(stdout);
+
     switch (inputNumber) {
 
         case 0:
             // DIVIDE BY ZERO ERROR
+            printf("Divide by zero");
             five = 5;
             printf("%i\n", five / inputNumber);
         case 1:
