@@ -6,7 +6,12 @@ void printUsage();
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
+FILE *fp;
+char* file_contents;
+struct stat filestatus;
+int file_size;
 
 void bufferOverflow(char *word) {
     char buf[20];
@@ -69,12 +74,37 @@ void called(int foo) {
 //sudo bash -c 'echo 0 > /proc/sys/kernel/randomize_va_space
 //gcc exploitME.c -o overflow -fno-stack_protector
 int main(int argc, char *argv[]) {
-    exit(0);
 
     int inputNumber;
     if (argc == 2) {
-        inputNumber = atoi(argv[1]);
-        printf("Input number: %d", inputNumber);
+
+        char *filename = argv[1];
+        fp = fopen(filename, "rt");
+        if (fp == NULL) {
+            fprintf(stderr, "Unable to open %s\n", filename);
+            fclose(fp);
+            free(file_contents);
+            return 1;
+        }
+
+        if ( stat(filename, &filestatus) != 0) {
+            fprintf(stderr, "File %s not found\n", filename);
+            return 1;
+        }
+
+        file_size = filestatus.st_size;
+        file_contents = (char*)malloc(filestatus.st_size);
+
+        if ( fread(file_contents, file_size, 1, fp) != 1 ) {
+            fprintf(stderr, "Unable t read content of %s\n", filename);
+            fclose(fp);
+            free(file_contents);
+            return 1;
+        }
+        fclose(fp);
+
+        inputNumber = atoi(file_contents);
+        printf("Input number: %d\n", inputNumber);
     } else {
         printf("Enter an integer: ");
         scanf("%d", &inputNumber);
