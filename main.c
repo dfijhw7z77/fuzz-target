@@ -69,6 +69,7 @@ void called(int foo) {
 //sudo bash -c 'echo 0 > /proc/sys/kernel/randomize_va_space
 //gcc exploitME.c -o overflow -fno-stack_protector
 int main(int argc, char *argv[]) {
+    exit(0);
 
     int inputNumber;
     if (argc == 2) {
