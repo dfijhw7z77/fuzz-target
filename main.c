@@ -1,7 +1,7 @@
 #define BUFSIZE1 512
 #define BUFSIZE2 ((BUFSIZE1/2)-8)
 
-void printUsage();
+void printUsage(char *executableName);
 
 #include <stdio.h>
 #include <string.h>
@@ -15,7 +15,7 @@ int file_size;
 
 void bufferOverflow(char *word) {
     char buf[20];
-    char s[7] = "secret\0";
+    char s[7] = "secret";
     int *p;
     p = (int *) (buf + 8);
 
