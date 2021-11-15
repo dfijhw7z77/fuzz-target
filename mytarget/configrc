@@ -1,0 +1,4 @@
+PROGRAMS=(mytarget_fuzz)
+
+
+mytarget_fuzz_ARGS="@@"
