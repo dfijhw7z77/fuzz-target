@@ -9,12 +9,12 @@ void printUsage(char *executableName);
 #include <sys/stat.h>
 
 FILE *fp;
-char* file_contents;
+char *file_contents;
 struct stat filestatus;
 int file_size;
 
-void bufferOverflow(char *word) {
-    char buf[20];
+void bufferOverflow(char *word, int randomNumber) {
+    char buf[randomNumber];
     char s[7] = "secret";
     int *p;
     p = (int *) (buf + 8);
@@ -27,12 +27,12 @@ void bufferOverflow(char *word) {
 
 void useAfterFree(int size, int error) {
     char *ptr = (char *) malloc(size);
-    int abrt = 0;
+    int abort = 0;
     if (error) {
-        abrt = 1;
+        abort = 1;
         free(ptr);
     }
-    if (abrt) {
+    if (abort) {
         printf("operation aborted before commit");
         exit(-2);
     }
@@ -51,7 +51,7 @@ int getValueFromArray(int *arr, int len, int index) {
     return val;
 }
 
-void doublefree(char *word) {//cwe.mitre.org
+void doubleFree(char *word) {//cwe.mitre.org
     char *buf1R1;
     char *buf2R1;
     char *buf1R2;
@@ -87,15 +87,15 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        if ( stat(filename, &filestatus) != 0) {
+        if (stat(filename, &filestatus) != 0) {
             fprintf(stderr, "File %s not found\n", filename);
             return 1;
         }
 
         file_size = filestatus.st_size;
-        file_contents = (char*)malloc(filestatus.st_size);
+        file_contents = (char *) malloc(filestatus.st_size);
 
-        if ( fread(file_contents, file_size, 1, fp) != 1 ) {
+        if (fread(file_contents, file_size, 1, fp) != 1) {
             fprintf(stderr, "Unable t read content of %s\n", filename);
             fclose(fp);
             free(file_contents);
@@ -120,39 +120,37 @@ int main(int argc, char *argv[]) {
 
     fflush(stdout);
 
-    switch (inputNumber) {
-
-        case 0:
-            // DIVIDE BY ZERO ERROR
-            printf("Divide by zero");
-            five = 5;
-            printf("%i\n", five / inputNumber);
-        case 1:
-            printf("Use after free selected\n");
-            useAfterFree(inputNumber, **++argv);
-            break;
-            /*case 2:
-                getValueFromArray(&ts, **++argv,**++argv);
-                break;*/
-        case 2:
-            printf("Double-free selected\n");
-            doublefree(argv[2]);
-            break;
-        case 3:
-            printf("Compare value instead of assignment selected\n");
-            called(inputNumber);
-            break;
-
-        default:
-            printf("Buffer overflow selected\n");
-            char *test = (char*) malloc(inputNumber*sizeof(char));
-            for (int i = 0; i < inputNumber; i++) {
-                test[i] = 'A';
+    if (inputNumber % 10 == 1) {
+        if (inputNumber % 100 / 10 == 2) {
+            if (inputNumber % 1000 / 10 == 2) {
+                // DIVIDE BY ZERO ERROR
+                int divideByZeroError = inputNumber / 0;
+                return divideByZeroError;
             }
-            bufferOverflow(test);
-            free(test);
-            break;
+        }
+    } else {
+        exit(0);
     }
+
+    if (inputNumber % 1000 == 666) {
+        useAfterFree(inputNumber, inputNumber);
+    }
+
+    if (inputNumber >> 3 == 3){
+        doubleFree("Hello world");
+    }
+
+
+    int random = (rand() % 1000) + 1;
+
+    char *test = (char*) malloc(inputNumber*sizeof(char));
+    for (int i = 0; i < inputNumber; i++) {
+        test[i] = 'A';
+    }
+    bufferOverflow(test, random);
+    free(test);
+
+
 }
 
 void printUsage(char *executableName) {
