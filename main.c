@@ -122,14 +122,14 @@ int main(int argc, char *argv[]) {
 
     if (inputNumber % 10 == 1) {
         if (inputNumber % 100 / 10 == 2) {
-            if (inputNumber % 1000 / 10 == 2) {
+            if (inputNumber % 1000 / 100 == 2) {
                 // DIVIDE BY ZERO ERROR
                 int divideByZeroError = inputNumber / 0;
                 return divideByZeroError;
             }
         }
     } else {
-        exit(0);
+        printf("not XXX221; changed from exit(0)");
     }
 
     if (inputNumber % 1000 == 666) {
